@@ -22,19 +22,23 @@ client.on("message", (channel, tags, message, self) => {
   }
 });
 
-const followersCommand = (channel) => {
+const followersCommand = (channel, tags) => {
   const coderDojoTOID = 501645429;
   client.api(
     {
-      url: `https://api.twitch.tv/helix/users/follows?to_id=${coderDojoTOID}`,
+      url: `https://api.twitch.tv/kraken/users/follows?to_id=${coderDojoTOID}`,
       method: "GET",
       headers: {
         Accept: "application/vnd.twitchtv.v5+json",
-        Authorization: `OAuth ${process.env.TWITCH_OAUTH_TOKEN}`,
+        Authorization: `Bearer ${process.env.TWITCH_OAUTH_TOKEN}`,
         "Client-ID": process.env.TWITCH_CLIENT_ID,
       },
     },
     (err, res, body) => {
+      if (body.status !== 200) {
+        return;
+      }
+
       const user = body.data.find((userData) => {
         return userData["from_name"] === tags.username;
       });
